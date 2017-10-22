@@ -8,3 +8,13 @@ C:\Users\FIC\Desktop\SistemaVendas\bin\Debug\netcoreapp2.0\SistemaVendas.dll
 C:\Users\FIC\Desktop\SistemaVendas\bin\Debug\netcoreapp2.0\SistemaVendas.pdb
 C:\Users\FIC\Desktop\SistemaVendas\obj\Debug\netcoreapp2.0\SistemaVendas.dll
 C:\Users\FIC\Desktop\SistemaVendas\obj\Debug\netcoreapp2.0\SistemaVendas.pdb
+C:\Users\alander\CodeXP\SistemaVendas\obj\Debug\netcoreapp2.0\SistemaVendas.csproj.CoreCompileInputs.cache
+C:\Users\alander\CodeXP\SistemaVendas\obj\Debug\netcoreapp2.0\SistemaVendas.AssemblyInfoInputs.cache
+C:\Users\alander\CodeXP\SistemaVendas\obj\Debug\netcoreapp2.0\SistemaVendas.AssemblyInfo.cs
+C:\Users\alander\CodeXP\SistemaVendas\obj\Debug\netcoreapp2.0\SistemaVendas.dll
+C:\Users\alander\CodeXP\SistemaVendas\obj\Debug\netcoreapp2.0\SistemaVendas.pdb
+c:\Users\alander\CodeXP\SistemaVendas\bin\Debug\netcoreapp2.0\SistemaVendas.deps.json
+c:\Users\alander\CodeXP\SistemaVendas\bin\Debug\netcoreapp2.0\SistemaVendas.runtimeconfig.json
+c:\Users\alander\CodeXP\SistemaVendas\bin\Debug\netcoreapp2.0\SistemaVendas.runtimeconfig.dev.json
+c:\Users\alander\CodeXP\SistemaVendas\bin\Debug\netcoreapp2.0\SistemaVendas.dll
+c:\Users\alander\CodeXP\SistemaVendas\bin\Debug\netcoreapp2.0\SistemaVendas.pdb
