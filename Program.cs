@@ -14,7 +14,7 @@ namespace SistemaVendas
         static int[] chaveCNPJ2 = {6,5,4,3,2,9,8,7,6,5,4,3,2};
         static string opcao;
         static string tipoDoc;
-        static string doc, op2;
+        static string doc;
         static string tempdoc;
         static int soma = 0, resto = 0;
         static Regex rgx = new Regex(@"^\d*$");
@@ -28,7 +28,7 @@ namespace SistemaVendas
         }
 
         private static void mostrarMenuPrincipal(){
-            string opt;
+            //string opt;
             int opcao = 9;
             
             do{ 
@@ -42,8 +42,8 @@ namespace SistemaVendas
                 Console.Write("Opção: ");
                 
                 do{
-                    opt = Console.ReadLine();
-                    opcao = Int16.Parse(opt);
+                    //opt = Console.ReadLine();
+                    opcao = Int16.Parse(Console.ReadLine());
                 } while (opcao < 1 || opcao > 4 && opcao != 9);
 
                 switch(opcao){
@@ -90,20 +90,19 @@ namespace SistemaVendas
                 pessoa[i] = Console.ReadLine();
             }
 
-            
+            //Define o nome do arquivo
             switch(tipoDoc){
                 case "CPF": arquivo = "PessoasFisicas.csv"; break;
                 case "CNPJ": arquivo = "PessoasJuridicas.csv"; break;
             }
 
-            //verifica se já existe o arquivo Clientes.csv
+            //verifica se já existe o arquivo PessosFisicas.csv ou PessoasJuridicas.csv
             arquivoExiste = File.Exists(arquivo);
 
             //Cria ou abre o arquivo Clientes.csv
             StreamWriter clientes = new StreamWriter(arquivo, true);
             
-            //Se o arquivo Clientes.csv não foi criado, grava o cabeçalho
-
+            //Se o arquivoPessosFisicas.csv ou PessoasJuridicas.csv não foi criado, grava o cabeçalho
             if(!arquivoExiste){
                 //cria cabeçaho
                 ArrayList cabecalho = new ArrayList();
@@ -112,33 +111,54 @@ namespace SistemaVendas
                     cabecalho.Add(campos[i]);
                 }
                 cabecalho.Add("Data");
-                escreverCabecalho(clientes, cabecalho);
+                escreverCabecalho(clientes, cabecalho.ToArray(typeof(String[])) as String[]);
             }
 
-            /*if(!arquivoExiste){
-                for(int i = 0; i < campos.Length; i++){
-                    if(campos[i] == (campos.Length -1).ToString()){
-                        clientes.WriteLine(campos[i]);
-                    } else {
-                        clientes.Write(campos[i] + ";");
-                    }
-                }    
-            }*/
-
-            //Escreve os dados do cliente no arquivo Cliente.csv
+            //Escreve os dados do cliente no arquivo PessosFisicas.csv ou PessoasJuridicas.csv
             if(docValido){
                 clientes.Write(doc + ";");
                 for(int i = 0; i < pessoa.Length; i++){
                     clientes.Write(pessoa[i] + ";");
                 }
-            //Escreve data e hora do cadastro
-            clientes.WriteLine(DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss"));
-            clientes.Close();
+                //Escreve data e hora do cadastro
+                clientes.WriteLine(DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss"));
+                clientes.Close();
             }
         }
 
         private static void cadastrarProduto(){
+            //Campos para serem cadastrados
+            String[] campos = new String[]{ "Código do Produto", "Nome do Produto", "Descricao", "Preço" };
+            String[] produto = new String[campos.Length];
 
+            //Faz perguntas sobrea os campos
+            for(int i = 0; i < campos.Length; i++){
+                Console.Write("Digite o " + campos[i] + " do produto: ");
+                produto[i] = Console.ReadLine();
+            }
+
+            //verifica se já existe o arquivo Produtos.csv
+            arquivo = "Produtos.csv";
+            arquivoExiste = File.Exists(arquivo);
+
+            //Cria ou abre o arquivo Clientes.csv
+            StreamWriter produtos = new StreamWriter(arquivo, true);
+            
+            //Se o arquivo Produtos.csv não foi criado, grava o cabeçalho
+            if(!arquivoExiste){
+                //cria cabeçaho
+                escreverCabecalho(produtos, campos);
+            }
+
+            //Escreve os dados do produto no arquivo Produtos.csv
+            for(int i = 0; i < produto.Length; i++){
+                if(produto[i] == (produto.Length -1).ToString()){
+                    produtos.Write(produto[i]);
+                } else {
+                    produtos.Write(produto[i] + ";");
+                }
+            }
+            produtos.Close();
         }
 
         private static void realizarVenda(){
@@ -149,6 +169,7 @@ namespace SistemaVendas
 
         }
 
+        //Função para validação do dígito verificador do documento
         private static string validarDigito(int[] chave, int tipoDoc){
             soma = 0;
             resto = 0;
@@ -160,7 +181,7 @@ namespace SistemaVendas
             }
             
             resto = soma % 11;
-            //if(resto == 0 && (doc.Substring(6,2) == "01" || doc.Substring(6,2) == "02")){
+
             if(resto < 2){
                 return "0";
             } else {
@@ -214,10 +235,10 @@ namespace SistemaVendas
                 }
             }
         }
-        public static void escreverCabecalho(StreamWriter arquivo, ArrayList cabecalho ) {
+        public static void escreverCabecalho(StreamWriter arquivo, String[] cabecalho ) {
             if(!arquivoExiste){
-                for(int i = 0; i < cabecalho.Count; i++){
-                    if (i == (cabecalho.Count - 1))
+                for(int i = 0; i < cabecalho.Length; i++){
+                    if (i == (cabecalho.Length - 1))
                         arquivo.WriteLine(cabecalho[i]);
                     else
                         arquivo.Write(cabecalho[i] + ";");
