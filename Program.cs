@@ -135,7 +135,7 @@ namespace SistemaVendas
 
         private static void cadastrarProduto(){
             //Campos para serem cadastrados
-            String[] campos = new String[]{ "Código do Produto", "Nome do Produto", "Descricao", "Preço" };
+            String[] campos = new String[]{ "Código do Produto", "Nome do Produto", "Descrição", "Preço" };
             String[] produto = new String[campos.Length];
 
             //Faz perguntas sobrea os campos
@@ -159,7 +159,7 @@ namespace SistemaVendas
 
             //Escreve os dados do produto no arquivo Produtos.csv
             for(int i = 0; i < produto.Length; i++){
-                if(produto[i] == (produto.Length -1).ToString()){
+                if(i == produto.Length -1){
                     produtos.Write(produto[i]);
                 } else {
                     produtos.Write(produto[i] + ";");
@@ -275,7 +275,7 @@ namespace SistemaVendas
                         int registros = 0;
                         foreach(String[] linha in produtos){
                             foreach(string campo in linha){
-                                Console.Write("{0,-45} {1,5:N1}", campo, "  |");
+                                Console.Write("| {0,-22} {1,5:N1}", campo, "");
                                 
                             }
                             
