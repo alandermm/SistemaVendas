@@ -188,17 +188,14 @@ namespace SistemaVendas
         private static void realizarVenda(){
             String[] produtosTemp, ultimaLinha; 
             int codProduto, ultimoCodigo;
-            string docCliente, arquivoCliente;
-            string arquivoProdutos = "Produtos.csv";
+            string docCliente;
+            String[] clienteEncontrado, produtoEncontrado;
 
-            
-            produtos = File.ReadAllLines("Produtos.csv");
-            
-            
-
-
-
-            buscarValidarCliente();
+            //Chamar no Vendas
+            do{
+                docCliente = solicitarValidarDocumento("realizará a compra");
+                clienteEncontrado = buscarCliente(docCliente);
+            } while(clienteEncontrado == null);
 
             //Captura ultima linha do arquivo e pega o código do produto
             produtosTemp = File.ReadAllLines(arquivo);
@@ -213,6 +210,10 @@ namespace SistemaVendas
                 Console.Write("Código do Produto: ");
                 codProduto = int.Parse(Console.ReadLine());
             } while (codProduto < 1 || codProduto > ultimoCodigo);
+
+            produtoEncontrado = buscarProduto(codProduto.ToString());
+
+            
 
             
         }
@@ -242,31 +243,47 @@ namespace SistemaVendas
             
         }
 
-        private static String[] buscarCliente(){
-            string docCliente, arquivo;
-            String[] clientes, clienteEncontrado;
-            bool encontrou;
+        private static String[] buscarRegistro(string arquivo, string busca){
+            String[] registros;
+            String[] registroEncontrado = null;
 
-            docCliente = solicitarValidarDocumento("realizará a compra");
+            //Verifica a existência e faz a leitura do arquivo passado
+            if(File.Exists(arquivo)){
+                registros = File.ReadAllLines(arquivo);
+            } else {
+                Console.WriteLine("O arquivo " + arquivo + "não existe!");
+                registros = null;
+            }
 
-            if(docCliente.Length == 11){
+            //Realiza a busca pelo termo dentro do arquivo
+            foreach(string registro in registros){
+                if(registro.Contains(busca)){
+                    registroEncontrado = registro.Split(';');
+                }
+            }
+            return registroEncontrado;
+        }
+
+        private static String[] buscarCliente(string cliente){
+            string arquivo;
+            
+            //Verifica o tipo do cliente
+            if(cliente.Length == 11){
                 arquivo = "PessoasFisicas.csv";
             } else {
                 arquivo = "PessoasJuridicas.csv";
             }
             
-            if(File.Exists(arquivo)){
-                clientes = File.ReadAllLines(arquivo);
-            }
+            //busca o cliente
+            return buscarRegistro(arquivo, cliente);
+        }
 
-            foreach(string cliente in clientes){
-                if(cliente.Contains(docCliente)){
-                    return clienteEncontrado = cliente.Split(';');
-                } else {
-                    return null;
-                }
-            }
+        private static String[] buscarProduto(string codigo){
+            string arquivo;
+            arquivo = "Produtos.csv";
             
+            //busca o cliente
+            return buscarRegistro(arquivo, codigo);
         }
 
         private static string validarCPF(){
