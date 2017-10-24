@@ -186,13 +186,19 @@ namespace SistemaVendas
         }
 
         private static void realizarVenda(){
-            String[] produtosTemp, ultimaLinha;
+            String[] produtosTemp, ultimaLinha; 
             int codProduto, ultimoCodigo;
-            string docCliente;
+            string docCliente, arquivoCliente;
+            string arquivoProdutos = "Produtos.csv";
 
-            docCliente = solicitarValidarDocumento("realizará a compra");
+            
+            produtos = File.ReadAllLines("Produtos.csv");
+            
+            
 
-            buscarCliente(docCliente);
+
+
+            buscarValidarCliente();
 
             //Captura ultima linha do arquivo e pega o código do produto
             produtosTemp = File.ReadAllLines(arquivo);
@@ -236,8 +242,31 @@ namespace SistemaVendas
             
         }
 
-        private static void buscarCliente(string cliente){
+        private static String[] buscarCliente(){
+            string docCliente, arquivo;
+            String[] clientes, clienteEncontrado;
+            bool encontrou;
 
+            docCliente = solicitarValidarDocumento("realizará a compra");
+
+            if(docCliente.Length == 11){
+                arquivo = "PessoasFisicas.csv";
+            } else {
+                arquivo = "PessoasJuridicas.csv";
+            }
+            
+            if(File.Exists(arquivo)){
+                clientes = File.ReadAllLines(arquivo);
+            }
+
+            foreach(string cliente in clientes){
+                if(cliente.Contains(docCliente)){
+                    return clienteEncontrado = cliente.Split(';');
+                } else {
+                    return null;
+                }
+            }
+            
         }
 
         private static string validarCPF(){
