@@ -116,6 +116,7 @@ namespace SistemaVendas
                     cabecalho.Add(campos[i]);
                 }
                 cabecalho.Add("Data");
+                //escreverCabecalho(clientes, cabecalho.ToArray(typeof(String[])) as String[]);
                 escreverCabecalho(clientes, cabecalho.ToArray(typeof(String[])) as String[]);
             }
 
