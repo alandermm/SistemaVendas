@@ -8,26 +8,19 @@ namespace SistemaVendas
 {
     class Program
     {
-        static int[] chaveCPF = {10,9,8,7,6,5,4,3,2};
-        static int[] chaveCPF2 = {11,10,9,8,7,6,5,4,3,2};
-        static int[] chaveCNPJ = {5,4,3,2,9,8,7,6,5,4,3,2};
-        static int[] chaveCNPJ2 = {6,5,4,3,2,9,8,7,6,5,4,3,2};
         static string opcao;
         static string tipoDoc;
         static string doc;
-        static string tempdoc;
-        static int soma = 0, resto = 0;
         static Regex rgx = new Regex(@"^\d*$");
-        static string primeiroDigito, segundoDigito;
         //static bool docValido = false;
         static string docValido;
         static bool arquivoExiste = false;
         static string arquivo = "";
-        static StreamReader arquivoProdutos;
+        
         static void Main(string[] args) {
             //imprime menu  
-            //mostrarMenuPrincipal();
-            exibirListaDeProdutos();
+            mostrarMenuPrincipal();
+            //exibirListaDeProdutos();
         }
 
         private static void mostrarMenuPrincipal(){
@@ -86,6 +79,9 @@ namespace SistemaVendas
             return docValido;
         }
 
+        /// <summary>
+        /// Realiza o cadastro de clientes
+        /// </summary>
         private static void cadastrarCliente(){
             solicitarValidarDocumento("será cadastrado");            
 
@@ -144,8 +140,6 @@ namespace SistemaVendas
             String[] campos = new String[]{ "Nome", "Descrição", "Preço" };
             String[] produto = new String[campos.Length];
             String[] cabecalho = new String[]{ "Código", "Nome", "Descrição", "Preço" };
-
-            
 
             //Faz perguntas sobrea os campos
             for(int i = 0; i < campos.Length; i++){
@@ -224,6 +218,8 @@ namespace SistemaVendas
 
         //Função para validação do dígito verificador do documento
         private static string validarDigito(int[] chave, int tipoDoc){
+            string tempdoc;
+            int soma = 0, resto = 0;
             soma = 0;
             resto = 0;
 
@@ -286,7 +282,15 @@ namespace SistemaVendas
             return buscarRegistro(arquivo, codigo);
         }
 
+        /// <summary>
+        /// Valida CPF
+        /// </summary>
+        /// <returns>Validação do CPF</returns>
         private static string validarCPF(){
+            int[] chaveCPF = {10,9,8,7,6,5,4,3,2};
+            int[] chaveCPF2 = {11,10,9,8,7,6,5,4,3,2};
+            string primeiroDigito, segundoDigito;
+            
             do{
                 Console.Write("Digite o CPF: ");
                 doc = limparCaracteresDocumento(Console.ReadLine());
@@ -313,6 +317,9 @@ namespace SistemaVendas
         }
 
         private static string validarCNPJ(){
+            int[] chaveCNPJ = {5,4,3,2,9,8,7,6,5,4,3,2};
+            int[] chaveCNPJ2 = {6,5,4,3,2,9,8,7,6,5,4,3,2};
+            string primeiroDigito, segundoDigito;
             do{
                 Console.Write("Digite o CNPJ: ");
                 doc = limparCaracteresDocumento(Console.ReadLine());
@@ -348,13 +355,13 @@ namespace SistemaVendas
             }
         }
         private static string limparCaracteresDocumento(string doc){
-            return doc.Replace("/","").Replace("-","").Replace(".","");
+            return doc.Trim().Replace("/","").Replace("-","").Replace(".","");
         }
 
         private static void exibirListaDeProdutos(){
-            
+            //StreamReader arquivoProdutos;
             arquivo = "Produtos.csv";
-            //static StreamReader arquivoProdutos;
+             StreamReader arquivoProdutos = null;
             if (File.Exists(arquivo)) {
                 try {
                     using (arquivoProdutos = new StreamReader(arquivo)){
