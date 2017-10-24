@@ -19,7 +19,8 @@ namespace SistemaVendas
         static int soma = 0, resto = 0;
         static Regex rgx = new Regex(@"^\d*$");
         static string primeiroDigito, segundoDigito;
-        static bool docValido = false;
+        //static bool docValido = false;
+        static string docValido;
         static bool arquivoExiste = false;
         static string arquivo = "";
         static StreamReader arquivoProdutos;
@@ -71,7 +72,7 @@ namespace SistemaVendas
             } while( tipoDoc != "1" && tipoDoc != "2");
         }
 
-        private static void solicitarValidarDocumento(string acao){
+        private static string solicitarValidarDocumento(string acao){
             //Escolhe e valida o tipo de cliente
             //tipoDoc -> 1 para CPF e 2 para CNPJ
             do{ 
@@ -81,7 +82,8 @@ namespace SistemaVendas
                     case "1": docValido = validarCPF(); tipoDoc = "CPF"; break;
                     case "2": docValido = validarCNPJ(); tipoDoc = "CNPJ"; break; 
                 }
-            } while (!docValido);
+            } while (docValido == null);
+            return docValido;
         }
 
         private static void cadastrarCliente(){
@@ -122,7 +124,7 @@ namespace SistemaVendas
             }
 
             //Escreve os dados do cliente no arquivo PessosFisicas.csv ou PessoasJuridicas.csv
-            if(docValido){
+            if(docValido != null){
                 clientes.Write(doc + ";");
                 for(int i = 0; i < pessoa.Length; i++){
                     clientes.Write(pessoa[i] + ";");
@@ -134,9 +136,16 @@ namespace SistemaVendas
         }
 
         private static void cadastrarProduto(){
+            int codProduto = 1;
+            string[] campo, produtos;
+            StreamWriter swProdutos;
+
             //Campos para serem cadastrados
-            String[] campos = new String[]{ "Código do Produto", "Nome do Produto", "Descrição", "Preço" };
+            String[] campos = new String[]{ "Nome", "Descrição", "Preço" };
             String[] produto = new String[campos.Length];
+            String[] cabecalho = new String[]{ "Código", "Nome", "Descrição", "Preço" };
+
+            
 
             //Faz perguntas sobrea os campos
             for(int i = 0; i < campos.Length; i++){
@@ -145,33 +154,61 @@ namespace SistemaVendas
             }
 
             //verifica se já existe o arquivo Produtos.csv
+            //Se o arquivo Produtos.csv não foi criado, grava o cabeçalho
+            //Define o código do produto
             arquivo = "Produtos.csv";
-            arquivoExiste = File.Exists(arquivo);
+            if(!File.Exists(arquivo)){
+                File.Create(arquivo).Close();
+                swProdutos = new StreamWriter(arquivo,true);
+                escreverCabecalho(swProdutos, cabecalho);
+                codProduto = 1;
+                swProdutos.Close();
+            } else{
+                produtos = File.ReadAllLines(arquivo);
+                campo = produtos[produtos.Length-1].Split(';');
+                codProduto = int.Parse(campo[0])+1;
+            }
 
             //Cria ou abre o arquivo Clientes.csv
-            StreamWriter produtos = new StreamWriter(arquivo, true);
-            
-            //Se o arquivo Produtos.csv não foi criado, grava o cabeçalho
-            if(!arquivoExiste){
-                //cria cabeçaho
-                escreverCabecalho(produtos, campos);
-            }
+            swProdutos = new StreamWriter(arquivo, true);
 
             //Escreve os dados do produto no arquivo Produtos.csv
+            swProdutos.Write(codProduto + ";");
             for(int i = 0; i < produto.Length; i++){
                 if(i == produto.Length -1){
-                    produtos.Write(produto[i]);
+                    swProdutos.Write(produto[i]);
                 } else {
-                    produtos.Write(produto[i] + ";");
+                    swProdutos.Write(produto[i] + ";");
                 }
             }
-            produtos.Close();
+            swProdutos.WriteLine("");
+            swProdutos.Close();
         }
 
         private static void realizarVenda(){
-            solicitarValidarDocumento("realizará a compra");
+            String[] produtosTemp, ultimaLinha;
+            int codProduto, ultimoCodigo;
+            string docCliente;
+
+            docCliente = solicitarValidarDocumento("realizará a compra");
+
+            buscarCliente(docCliente);
+
+            //Captura ultima linha do arquivo e pega o código do produto
+            produtosTemp = File.ReadAllLines(arquivo);
+            ultimaLinha = produtosTemp[produtosTemp.Length-1].Split(';');
+            ultimoCodigo = int.Parse(ultimaLinha[0]);
 
             exibirListaDeProdutos();
+
+            Console.WriteLine("Escolha um produto pelo código: ");
+
+            do{
+                Console.Write("Código do Produto: ");
+                codProduto = int.Parse(Console.ReadLine());
+            } while (codProduto < 1 || codProduto > ultimoCodigo);
+
+            
         }
 
         private static void exibirExtratoCliente(){
@@ -199,7 +236,11 @@ namespace SistemaVendas
             
         }
 
-        private static bool validarCPF(){
+        private static void buscarCliente(string cliente){
+
+        }
+
+        private static string validarCPF(){
             do{
                 Console.Write("Digite o CPF: ");
                 doc = limparCaracteresDocumento(Console.ReadLine());
@@ -209,20 +250,23 @@ namespace SistemaVendas
 
             if(primeiroDigito != doc.Substring(9, 1)){
                 Console.WriteLine("CPF inválido!\n");
-                return false;
+                //return false;
+                return null;
             } else {
                 segundoDigito = validarDigito(chaveCPF2, 1);
                 if(doc.EndsWith(segundoDigito)){
                     Console.WriteLine("CPF válido!\n");
-                    return true;
+                    //return true;
+                    return doc;
                 } else {
                     Console.WriteLine("CPF inválido!\n");
-                    return false;
+                    //return false;
+                    return null;
                 }
             }
         }
 
-        private static bool validarCNPJ(){
+        private static string validarCNPJ(){
             do{
                 Console.Write("Digite o CNPJ: ");
                 doc = limparCaracteresDocumento(Console.ReadLine());
@@ -232,15 +276,18 @@ namespace SistemaVendas
 
             if(primeiroDigito != doc.Substring(12, 1)){
                 Console.WriteLine("CNPJ inválido!\n");
-                return false;
+                //return false;
+                return null;
             }else {
                 segundoDigito = validarDigito(chaveCNPJ2, 2);
                 if(doc.EndsWith(segundoDigito)){
                     Console.WriteLine("CNPJ válido!\n");
-                    return true;
+                    //return true;
+                    return doc;
                 } else {
                     Console.WriteLine("CNPJ inválido!\n");
-                    return false;
+                    //return false;
+                    return null;
                 }
             }
         }
@@ -259,6 +306,7 @@ namespace SistemaVendas
         }
 
         private static void exibirListaDeProdutos(){
+            
             arquivo = "Produtos.csv";
             //static StreamReader arquivoProdutos;
             if (File.Exists(arquivo)) {
@@ -267,6 +315,7 @@ namespace SistemaVendas
                         String produto;
                         ArrayList produtos = new ArrayList{};
                         String[] camposProduto;
+                        
                         // Lê linha por linha até o final do arquivo
                         while ((produto = arquivoProdutos.ReadLine()) != null){
                             camposProduto = produto.Split(';');
@@ -283,7 +332,7 @@ namespace SistemaVendas
                             
                             registros++;
                         }
-
+                        
                         /*for (int i = 0; i < produtos.Count; i++){
                             Console.WriteLine(produtos[i]);
                         }*/
@@ -296,7 +345,6 @@ namespace SistemaVendas
             } else {
                 Console.WriteLine(" O arquivo " + arquivo + "não foi localizado !");
             }
-            
 
 
             /*StreamReader produtos = new StreamReader(arquivo);
@@ -311,7 +359,6 @@ namespace SistemaVendas
                 Console.WriteLine(camposProduto[0]);
             }
             produtos.Close();*/
-            
         }
     }
 }
