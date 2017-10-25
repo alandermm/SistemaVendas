@@ -115,9 +115,12 @@ namespace SistemaVendas
                 for (int i = 0; i < campos.Length; i++){
                     cabecalho.Add(campos[i]);
                 }
+                
                 cabecalho.Add("Data");
+                //String[] cabecalho2 = (String[])cabecalho.ToArray(typeof(String[]));
+                
                 //escreverCabecalho(clientes, cabecalho.ToArray(typeof(String[])) as String[]);
-                escreverCabecalho(clientes, cabecalho.ToArray(typeof(String[])) as String[]);
+                escreverCabecalho(clientes, cabecalho.ToArray(typeof(string)) as String[]);
             }
 
             //Escreve os dados do cliente no arquivo PessosFisicas.csv ou PessoasJuridicas.csv
